@@ -1,6 +1,12 @@
 <?php
 
 session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 require_once 'db.php';
 
 $message = "";
@@ -31,7 +37,7 @@ if (isset($_POST['delete_id'])) {
     $user_id = $_SESSION['user_id'];
 
     $stmt = $conn->prepare("DELETE FROM blogg WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("i", $id, $user_id);
+    $stmt->bind_param("ii", $id, $user_id);
 
     if ($stmt->execute()) {
         $message = "Comment deleted.";
@@ -65,7 +71,7 @@ if (isset($_POST['comments'])) {
 }
 
 /* ---------------- EDIT STATE ---------------- */
-//$editing = isset($_POST['edit']) ? (int)$_POST['edit'] : 0;
+$editing = isset($_POST['edit']) ? (int)$_POST['edit'] : 0;
 
 include 'includes/header.php';
 ?>
