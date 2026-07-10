@@ -17,7 +17,11 @@ body{
         line-height: 1.6;
 
 }
-
+img{
+    max-width:100%;
+    height:auto;
+    display:block;
+}
 .container{
     display: grid;
     background-color: cadetblue;
@@ -54,10 +58,10 @@ body{
   height: 400px;
   grid-template-columns:  repeat(3, 1fr);
   background-color: dodgerblue;
-  padding: 5px;
+  padding: 10px;
   gap: 10px;
   align-content: start;
-   min-height: 400px;
+   min-height: 400px;/*This gives equal-width columns and allows the section to grow.*/
 }
 .comment-content-box div {
   background-color: #f1f1f1;
@@ -100,6 +104,8 @@ button{
     background-color: black;
 }
 header{
+  display: grid;
+    align-items: center;
     grid-area:  header;
     background: #000;
     color: white;
@@ -185,8 +191,59 @@ aside {
 }
 
 /* Responsive */
+/* Tablets */
+@media (max-width: 900px) {
 
+    .comment-content-box{
+        grid-template-columns: repeat(2, 1fr);
+    }
 
+    form{
+        width: 80vw;
+    }
+
+    .container{
+        width: 98%;
+        border-radius: 1rem;
+    }
+
+}
+/* Phones */
+@media (max-width: 600px){
+
+    .comment-content-box{
+        grid-template-columns: 1fr;
+    }
+
+    .comment-content-box div{
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    .wrapper{
+        width: 100%;
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+
+    form{
+        width: 95%;
+    }
+
+    button{
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    h1{
+        font-size: 2rem;
+    }
+
+    p{
+        font-size: 1rem;
+    }
+
+}
 /*-------------Placeholder End-------------------------------------------*/
 /*Navigation ---------------------------*/
 nav{
@@ -207,7 +264,7 @@ nav a {
     transition: background .3s;
 }
 
-nav.a:hover{
+nav a:hover{
     background-color: blueviolet;
 }
 
