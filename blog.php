@@ -30,7 +30,7 @@
 </div>
 
 <div class="wrapper">
-    <?php comments($conn); ?>
+    <?php posts($conn); ?>
 </div>
 
 </main>

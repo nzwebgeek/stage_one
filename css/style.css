@@ -131,6 +131,27 @@ footer{
 
 
 }
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a,
+.pagination strong {
+    margin: 0 5px;
+    padding: 8px 12px;
+}
+
+.pagination a {
+    text-decoration: none;
+    border: 1px solid #ccc;
+}
+
+.pagination strong {
+    background: #333;
+    color: white;
+}
 /*------------------Placeholder start--------------------*/
 .placeholder-container {
     display: grid;
