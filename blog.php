@@ -13,11 +13,11 @@
 
 <div class="comment-content-box">
 
-    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+    <div><img src="img/laravel.png" alt=""></div>
 
-    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+    <div><img src="img/php.jpg" alt=""></div>
 
-    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
+    <div><img src="img/css.jpg" alt=""></div>
 
     <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
 

@@ -1,5 +1,14 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
+
+$message = "";
+
+if (isset($_GET['saved'])) {
+    $message = "Colours saved successfully.";
+}
 
 include 'db.php';
 
@@ -8,13 +17,41 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-include 'includes/my-header.php';
 
-$message = "";
+/* ==========================================
+   Save Theme Colours
+========================================== */
+if (isset($_POST['save_colors'])) {
 
-/* ==========================
+    $theme = $_POST['theme_color'];
+    $background = $_POST['background_color'];
+    $text = $_POST['text_color'];
+
+    $stmt = $conn->prepare("
+        UPDATE users
+        SET theme_color=?,
+            background_color=?,
+            text_color=?
+        WHERE id=?
+    ");
+
+    $stmt->bind_param(
+        "sssi",
+        $theme,
+        $background,
+        $text,
+        $_SESSION['user_id']
+    );
+
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: dashboard.php?saved=1");
+    exit();
+}
+/* ==========================================
    Upload Image
-========================== */
+========================================== */
 
 if (isset($_POST['submit'])) {
 
@@ -28,7 +65,9 @@ if (isset($_POST['submit'])) {
 
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-        $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION)
+        );
 
         if (!in_array($extension, $allowed)) {
 
@@ -45,7 +84,6 @@ if (isset($_POST['submit'])) {
 
             if (move_uploaded_file($_FILES['image']['tmp_name'], $filePath)) {
 
-                // Save image
                 $stmt = $conn->prepare("
                     INSERT INTO images (filename, filepath)
                     VALUES (?, ?)
@@ -59,14 +97,18 @@ if (isset($_POST['submit'])) {
 
                     $stmt->close();
 
-                    // Update the user's profile image
                     $stmt = $conn->prepare("
                         UPDATE users
                         SET image_id = ?
                         WHERE id = ?
                     ");
 
-                    $stmt->bind_param("ii", $imageId, $_SESSION['user_id']);
+                    $stmt->bind_param(
+                        "ii",
+                        $imageId,
+                        $_SESSION['user_id']
+                    );
+
                     $stmt->execute();
                     $stmt->close();
 
@@ -75,32 +117,30 @@ if (isset($_POST['submit'])) {
                 } else {
 
                     $message = "Database error: " . $stmt->error;
-                    $stmt->close();
-
                 }
 
             } else {
 
                 $message = "Failed to upload image.";
-
             }
-
         }
 
     } else {
 
         $message = "Please select an image.";
-
     }
 }
 
-/* ==========================
-   Load logged in user
-========================== */
+/* ==========================================
+   Load User
+========================================== */
 
 $stmt = $conn->prepare("
     SELECT
         u.username,
+        u.theme_color,
+        u.background_color,
+        u.text_color,
         i.filepath
     FROM users u
     LEFT JOIN images i
@@ -114,9 +154,36 @@ $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 
 $stmt->close();
+
+include 'includes/my-header.php';
 ?>
 
-<div class="container" id="container">
+<style>
+:root{
+    --theme: <?= htmlspecialchars($user['theme_color'] ?: '#007bff'); ?>;
+    --background: <?= htmlspecialchars($user['background_color'] ?: '#ffffff'); ?>;
+    --footer: <?= htmlspecialchars($user['theme_color'] ?: '#051b33'); ?>;
+    --text: <?= htmlspecialchars($user['text_color'] ?: '#000000'); ?>;
+}
+
+.main-body{
+    background: var(--background);
+    color: var(--text);
+}
+
+.header,
+.footer,
+.menu{
+    background: var(--theme);
+}
+
+button{
+    background: var(--theme);
+    color: white;
+}
+</style>
+
+<div class="container main-body" id="container" >
 
     <div class="header">
         <h1>Dashboard</h1>
@@ -125,8 +192,8 @@ $stmt->close();
     <div class="menu">
         <a href="edit-index.php">Edit Home Posts</a><br>
         <a href="change_password.php">Change Password</a><br>
-        <a href="#" onclick="showPanel();">Upload Image</a><br>
-        <a href="#" onclick="showPanel2();">Edit Profile</a>
+        <a href="#" class="show-form" data-form="uploadForm">Upload Image</a><br>
+        <a href="#" class="show-form" data-form="profileForm">Edit Profile</a><br>
         <a href="logout.php">Logout</a><br>
     </div>
 
@@ -137,8 +204,6 @@ $stmt->close();
         <p>Welcome <?= htmlspecialchars($user['username']); ?>!</p>
 
         <p>You are logged in.</p>
-
-        <button id="toggleBtn">Change Color</button>
 
         <?php if (!empty($user['filepath'])) : ?>
 
@@ -152,8 +217,11 @@ $stmt->close();
 
         <?php endif; ?>
 
-        <form method="post" enctype="multipart/form-data" id="panel" class="hidden" style="background:navy;">
-
+<form method="post"
+      id="uploadForm"
+      class="form"
+      enctype="multipart/form-data"
+      style="display:none; background:navy;">
             <p>Select image to upload:</p>
 
             <input type="file"
@@ -167,15 +235,31 @@ $stmt->close();
 
         </form>
 
-        <form method="post" id="panel2" class="hidden" style="background:white;">
-            <label>Theme Color</label>
-            <input type="color" name="theme_color">
-            <label>Background</label>
-            <input type="color" name="background_color">
-            <label>Text Color</label>
-            <input type="color" name="text_color">
-            <button type="submit">Save</button>
-        </form>
+       <form method="post" id="profileForm" class="form" style="display:none;">
+
+    <label>Theme Colour</label>
+    <input
+        type="color"
+        name="theme_color"
+        value="<?= htmlspecialchars($user['theme_color'] ?: '#007bff'); ?>">
+
+    <label>Background Colour</label>
+    <input
+        type="color"
+        name="background_color"
+        value="<?= htmlspecialchars($user['background_color'] ?: '#ffffff'); ?>">
+
+    <label>Text Colour</label>
+    <input
+        type="color"
+        name="text_color"
+        value="<?= htmlspecialchars($user['text_color'] ?: '#000000'); ?>">
+
+    <button type="submit" name="save_colors">
+        Save Colours
+    </button>
+
+</form> 
 
         <?php if ($message): ?>
 

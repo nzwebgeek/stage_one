@@ -190,6 +190,12 @@ aside {
     border-radius: 8px;
 }
 
+.placeholder-menu{
+    list-style: none;
+
+}
+
+
 /* Responsive */
 /* Tablets */
 @media (max-width: 900px) {

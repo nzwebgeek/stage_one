@@ -1,27 +1,17 @@
-const container = document.getElementById("container"); // eg target
+const links = document.querySelectorAll(".show-form");
+const forms = document.querySelectorAll(".form");
 
-document.addEventListener("DOMContentLoaded", function () {
+links.forEach(link => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
 
-    const button = document.getElementById("toggleBtn");
+    // Hide all forms
+    forms.forEach(form => {
+      form.style.display = "none";
+    });
 
-    if (button) {
-        button.addEventListener("click", () => {
-            document.body.classList.toggle('active');
-        });
-    }
-
+    // Show the selected form
+    const formId = event.target.dataset.form;
+    document.getElementById(formId).style.display = "block";
+  });
 });
-
-function showPanel() {
-    var x = document.getElementById("panel");
-
-    if (x.style.display === "block") {
-        x.style.display = "none";
-    } else {
-        x.style.display = "block";
-    }
-}
-
-function showPanel2() {
-    document.getElementById("panel2").classList.toggle("show");
-}
