@@ -28,7 +28,12 @@ function comments($conn, $postId)
             ORDER BY blogg.id DESC
             LIMIT ?, ?";
 
-    $result = $conn->query($sql);
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iii", $postId, $offset, $commentsPerPage);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+    
 
     while ($row = $result->fetch_assoc()) {
         echo '
