@@ -21,8 +21,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <header>
     <nav>
+        <ul>
+           <li>
+            Welcome <?= htmlspecialchars($_SESSION['username'] ?? 'Guest'); ?>
+            </li>
+        </ul>
       <ul>
-        <?php if (isset($_SESSION['username'])): ?>        
+        <?php if (isset($_SESSION['user_id'])): ?>        
         <li><a href="index.php">Home</a></li> 
         <li><a href="blog.php">Blog</a></li> 
         <li><a href="dashboard.php">Dashboard</a></li> 

@@ -4,6 +4,7 @@ include 'includes/header.php';
 require 'db.php';
 
 $message = "";
+$role_id = 5; // User
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -11,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    
 
     if ($password != $confirm_password) {
         $message = "Passwords do not match.";
@@ -19,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $hashedPassword);
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("sssi", $username, $email, $hashedPassword, $role_id);
 
         if ($stmt->execute()) {
             $message = "Registration successful!";

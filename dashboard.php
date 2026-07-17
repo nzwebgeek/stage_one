@@ -186,7 +186,7 @@ button{
 <div class="container main-body" id="container" >
 
     <div class="header">
-        <h1>Dashboard</h1>
+        <h1>Dashboard </h1>
     </div>
 <?php
 /* ==========================================
@@ -205,9 +205,12 @@ $posts = $stmt->get_result();
 
 $stmt->close();
 ?>
+<?php
+/*check becomes:*/
+?>
    <div class="menu">
 
-    <a href="#" id="showPosts">Edit Post</a><br>
+  <a href="#" id="showPosts">Edit Post</a><br>
 
     <a href="change_password.php">Change Password</a><br>
 
@@ -219,7 +222,12 @@ $stmt->close();
         Edit Profile
     </a><br>
 
+     <?php if (in_array($_SESSION['role'] ?? '', ['Super Admin', 'Admin'])): ?>
+    <a href="/admin/">Admin Panel</a>
+    <?php endif; ?>
+        <br>
     <a href="logout.php">Logout</a><br>
+   
 
 </div>
 
